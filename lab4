@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+
+vector<double> solveLinearSystem(const vector<vector<double>>& A, const vector<double>& b) {
+    int n = A.size();
+
+    vector<vector<double>> augmentedMatrix(n, vector<double>(n + 1, 0.0));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            augmentedMatrix[i][j] = A[i][j];
+        }
+        augmentedMatrix[i][n] = b[i];
+    }
+
+
+    for (int i = 0; i < n; ++i) {
+        int maxRow = i;
+        for (int k = i + 1; k < n; ++k) {
+            if (abs(augmentedMatrix[k][i]) > abs(augmentedMatrix[maxRow][i])) {
+                maxRow = k;
+            }
+        }
+        swap(augmentedMatrix[i], augmentedMatrix[maxRow]);
+
+        for (int k = i + 1; k < n; ++k) {
+            double factor = augmentedMatrix[k][i] / augmentedMatrix[i][i];
+            for (int j = i; j <= n; ++j) {
+                augmentedMatrix[k][j] -= factor * augmentedMatrix[i][j];
+            }
+        }
+    }
+
+    vector<double> x(n, 0.0);
+    for (int i = n - 1; i >= 0; --i) {
+        x[i] = augmentedMatrix[i][n] / augmentedMatrix[i][i];
+        for (int k = i - 1; k >= 0; --k) {
+            augmentedMatrix[k][n] -= augmentedMatrix[k][i] * x[i];
+        }
+    }
+
+    return x;
+}
+
+vector<double> leastSquaresApproximation(const vector<double>& x, const vector<double>& y, int degree) {
+    int n = x.size();
+
+    vector<vector<double>> A(degree + 1, vector<double>(degree + 2, 0.0));
+    for (int i = 0; i <= degree; ++i) {
+        for (int j = 0; j <= degree; ++j) {
+            for (int k = 0; k < n; ++k) {
+                A[i][j] += pow(x[k], i + j);
+            }
+        }
+        for (int k = 0; k < n; ++k) {
+            A[i][degree + 1] += y[k] * pow(x[k], i);
+        }
+    }
+
+    return solveLinearSystem(A, vector<double>());
+}
+
+int main() {
+
+    vector<double> x = { 60, 70, 80, 90, 100, 110, 120 };
+    vector<double> y = { 0.0148, 0.0124, 0.0102, 0.0085, 0.0071, 0.0059, 0.0051 };
+
+    int degree = 2;
+
+    vector<double> coefficients = leastSquaresApproximation(x, y, degree);
+
+    cout << "Approximating polynomial coeffs: ";
+    for (int i = degree; i >= 0; --i) {
+        cout << coefficients[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
