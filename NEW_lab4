@@ -1,0 +1,30 @@
+#include <iostream>
+#include <cmath>
+
+int main() {
+    // Заданные данные
+    double t[] = { 60, 70, 80, 90, 100, 110, 120 };
+    double mu[] = { 0.0148, 0.0124, 0.0102, 0.0085, 0.0071, 0.0059, 0.0051 };
+    int n = sizeof(t) / sizeof(t[0]); // Количество измерений
+
+    // Вычисление сумм
+    double sum_x = 0, sum_y = 0, sum_xy = 0, sum_x_squared = 0;
+    for (int i = 0; i < n; i++) {
+        double x = t[i];
+        double y = log(mu[i]);
+        sum_x += x;
+        sum_y += y;
+        sum_xy += x * y;
+        sum_x_squared += x * x;
+    }
+
+    // Вычисление коэффициентов a и beta
+    double a = exp((sum_x_squared * sum_y - sum_x * sum_xy) / (n * sum_x_squared - sum_x * sum_x));
+    double beta = (n * sum_xy - sum_x * sum_y) / (n * sum_x_squared - sum_x * sum_x);
+
+    // Вывод результатов
+    std::cout << "a = " << a << std::endl;
+    std::cout << "beta = " << beta << std::endl;
+
+    return 0;
+}
