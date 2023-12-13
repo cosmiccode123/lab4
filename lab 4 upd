@@ -1,0 +1,40 @@
+#include <iostream>
+#include <cmath>
+
+int main() {
+	double delta_t[] = { 60, 70, 80, 90, 100, 110 };
+	double gamma[] = { 0.0148, 0.0124, 0.0102, 0.0085, 0.0071, 0.0059, 0.0051 };
+
+	const int n = 6;
+
+	double ln_delta_t[n];
+	double ln_gamma[n];
+
+	for (int i = 0; i < n; i++) {
+		ln_delta_t[i] = log(delta_t[i]);
+		ln_gamma[i] = log(gamma[i]);
+	}
+
+	double sum_x = 0;
+	double sum_y = 0;
+	double sum_x_squared = 0;
+	double sum_xy = 0;
+
+	for (int i = 0; i < n; i++) {
+		sum_x += ln_delta_t[i];
+		sum_y += ln_gamma[i];
+		sum_x_squared += pow(ln_delta_t[i], 2);
+		sum_xy += ln_delta_t[i] * ln_gamma[i];
+	}
+
+	double mean_x = sum_x / n;
+	double mean_y = sum_y / n;
+
+	double b = (sum_xy - n * mean_x * mean_y) / (sum_x_squared - n * pow(mean_x, 2));
+	double a = exp(mean_y - b * mean_x);
+
+	std::cout << "a = " << a << std::endl;
+	std::cout << "b = " << b << std::endl;
+
+	return 0;
+}
